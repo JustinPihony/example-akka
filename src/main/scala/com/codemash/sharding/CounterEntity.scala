@@ -43,7 +43,7 @@ object CounterEntity {
   private def commandHandler(id: String, state: State, cmd: Command, ctx: ActorContext[Command]): Effect[Event, State] = {
     cmd match {
       case Increment(n, replyTo) =>
-        Effect.persist(Incremented(n)).thenRun { newState =>
+        Effect.persist(Incremented(n)).thenRun { (newState: State) =>
           ctx.log.info("CounterEntity {} incremented by {}. New value: {}", id, n, newState.value)
         }.thenReply(replyTo)(newState => Ack(id, newState.value))
       case Get(replyTo) =>

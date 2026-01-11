@@ -21,6 +21,8 @@ lazy val root = (project in file("."))
 
       // Persistence (for Option B demo)
       "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion,
+      "com.lightbend.akka" %% "akka-persistence-jdbc" % "5.2.1",
+      "com.h2database" % "h2" % "2.2.224",
 
       // HTTP
       "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,

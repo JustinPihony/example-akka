@@ -11,15 +11,24 @@ import com.codemash.actors.RetryingWorker
 import com.codemash.actors.PersistRetryWorker
 import com.codemash.http.Routes
 import com.codemash.sharding.CounterEntity
+import com.typesafe.config.ConfigFactory
+import akka.persistence.jdbc.testkit.scaladsl.SchemaUtils
 
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 object Main {
   def main(args: Array[String]): Unit = {
+    val config = ConfigFactory.load()
+
     val root = Behaviors.setup[Nothing] { ctx =>
       implicit val system = ctx.system
       implicit val ec = ctx.executionContext
+
+      // Initialize Persistence Schema (H2)
+      // This is a helper from akka-persistence-jdbc to create the tables
+      // It's idempotent (IF NOT EXISTS)
+      SchemaUtils.createIfNotExists()
 
       // Supervised worker to demonstrate fault tolerance
       val workerBehavior = Behaviors.supervise(FlakyWorker())
@@ -68,6 +77,6 @@ object Main {
       Behaviors.empty
     }
 
-    ActorSystem[Nothing](root, "AkkaActorModelDemo")
+    ActorSystem[Nothing](root, "AkkaActorModelDemo", config)
   }
 }
